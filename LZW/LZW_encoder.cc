@@ -4,7 +4,8 @@
   lossless data compression algorithm, dictionary coder
 
   The main function takes as argument
-  arg1: input file name, this shall be a ASCII-only textfile
+  arg1: input file name, this shall be an ASCII-only textfile.
+  arg2: [optional] file name of the input alphabet.
 
   It then writes the following files:
   fout1: output file name: see fname1,
@@ -12,8 +13,9 @@
 	 only contains '0' and '1'.
   fout2: output file name: see fname2, 
          the alphabet read from the file specified by arg2
+         (if provided).
   fout3: output file name: see fname3,
-         C code for a 2D C string specifying the alphabet
+         C code for a 2D C string specifying the alphabet.
 
 */
 
@@ -24,6 +26,7 @@
 #include <map>
 #include <vector>
 #include <utility>
+#define DEBUG_PRINTF 0
 const char fname1[] = "LZW_encoded.txt";
 const char fname2[] = "LZW_alphabet.txt";
 const char fname3[] = "LZW_alphabet_C.txt";
@@ -72,8 +75,7 @@ void LZW(char* A, char* S, vector<bool>& C) {
     // matches the current input
     string curr(S+i, S+i+1);
     int found = -1;
-    while (MSI.find(curr) != MSI.end() && S[i] != 0) {
-      map<string,int>::iterator iter = MSI.find(curr);
+    while (MSI.find(curr) != MSI.end() && S[i] != '\0') {
       found = MSI[curr];
       curr += S[++i];
     }
@@ -110,17 +112,24 @@ void LZW(char* A, char* S, vector<bool>& C) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 3) {
-    fprintf(stderr, "Wrong number of arguments specified\n");
-    return -1;
+  if (argc > 3 || argc <= 1) {
+    fprintf(stderr, "Wrong number of arguments specified.\n");
+    return 1;
   }
   
   FILE *fin1 = fopen(argv[1], "r");
-  FILE *fin2 = fopen(argv[2], "r");
 
-  if (fin1 == NULL || fin2 == NULL) {
-    fprintf(stderr, "Input file %s or %s could not be opened\n", argv[1], argv[2]);
-    return -1;
+  if (fin1 == NULL) {
+    fprintf(stderr, "Input file %s could not be opened.\n", argv[1]);
+    return 1;
+  }
+
+  FILE *fin2 = fopen(argv[2], "r");
+  if (argc >= 3) {
+    if (fin2 == NULL) {
+      fprintf(stderr, "Input file %s could not be opened.\n", argv[2]);
+      return 1;
+    }
   }
 
   FILE *fout1 = fopen(fname1, "w");
@@ -131,11 +140,27 @@ int main(int argc, char** argv) {
   char S[1000000];
   fread(S, sizeof(char), sizeof(S), fin1);
 
-  // read alphabet
+  // read alphabet 
   char A[100000];
-  fread(A, sizeof(char), sizeof(A), fin2);
-  int alen = strlen(A);
-  
+  int alen;
+  if (argc >= 3) {
+    fread(A, sizeof(char), sizeof(A), fin2);
+    alen = strlen(A);
+  }
+  else {
+    // generate alphabet
+    alen = 0;
+    bool B[256];
+    memset(B, 0, sizeof(B));
+    int slen = strlen(S);
+    for (int i = 0; i < slen; i++) 
+      B[(int) S[i]] = true;
+
+    for (int i = 0; i < 256; i++) 
+      if (B[i]) 
+	A[alen++] = (char) i;
+  }
+
   printf("The alphabet: ");
   for (int i = 0; i < alen; i++) {
     printf("%c", A[i]);
@@ -164,9 +189,9 @@ int main(int argc, char** argv) {
   fprintf(fout2, "%s", A);
 
   // fout3
-  fprintf(fout3, "char A[]=\"", alen);
+  fprintf(fout3, "char A[]=\"");
   for (int i = 0; i < alen; i++) {
-    fprintf(fout3, "%c",A[i]);
+    fprintf(fout3, "%c", A[i]);
   }
   fprintf(fout3, "\";\n");
 }

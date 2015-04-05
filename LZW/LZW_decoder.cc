@@ -3,15 +3,15 @@
   lossless data compression algorithm, dictionary coder
 
   The main function takes as argument
-  arg1: input file name, this shall be a ASCII textfile
-        containing only '0' and '1'
+  arg1: input file name, this shall be an ASCII textfile
+        containing only '0' and '1'.
   arg2: input file name, the file shall be an ASCII-only 
-        string specifying the alphabet
+        string specifying the alphabet.
 
   It then writes the following files:
   fout1: output file name: see fname1,
          the output string after decoding, may contain
-	 symbols as specified by arg2
+	 symbols as specified by arg2.
 
 */
 
@@ -69,7 +69,7 @@ void LZW_decoder(char* A, char* S, string& T) {
     int rbits = num_bits(entries);
 
     if (slen - i < rbits) {
-      printf("ERROR, %d bits undecoded\n", slen - i);
+      printf("ERROR, %d bits undecoded.\n", slen - i);
       break;
     }
     
@@ -120,14 +120,14 @@ void LZW_decoder(char* A, char* S, string& T) {
 
 int main(int argc, char** argv) {
   if (argc != 3) {
-    fprintf(stderr, "Wrong number of arguments specified\n");
+    fprintf(stderr, "Wrong number of arguments specified.\n");
     return -1;
   }
   FILE *fin1 = fopen(argv[1], "r");
   FILE *fin2 = fopen(argv[2], "r");
 
   if (fin1 == NULL || fin2 == NULL) {
-    fprintf(stderr, "Input file %s or %s could not be opened\n", argv[1], argv[2]);
+    fprintf(stderr, "Input file %s or %s could not be opened.\n", argv[1], argv[2]);
     return -1;
   }
 
