@@ -1,5 +1,4 @@
 /*
-
   Lempel-Ziv-Welch (encoder)
   lossless data compression algorithm, dictionary coder
 
