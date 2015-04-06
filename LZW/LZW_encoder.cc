@@ -25,7 +25,6 @@
 #include <map>
 #include <vector>
 #include <utility>
-#define DEBUG_PRINTF 0
 const char fname1[] = "LZW_encoded.txt";
 const char fname2[] = "LZW_alphabet.txt";
 const char fname3[] = "LZW_alphabet_C.txt";
@@ -51,7 +50,7 @@ int num_bits(int x) {
 //   distinct, A is terminated with a '0' (C string)
 // S = {s_1, ..., s_n} input char string, null terminated
 // C = {c_1, ..., c_m} output binary sequence
-void LZW(char* A, char* S, vector<bool>& C) {
+void LZW_encoder(char* A, char* S, vector<bool>& C) {
   int alen = strlen(A), slen = strlen(S);
   int entries = alen;
   // M = (u_i, v_i) LZW extended dictionary, map string u_i
@@ -171,7 +170,7 @@ int main(int argc, char** argv) {
 
   printf("Lempel-Ziv-Welch...\n");
   vector<bool> C;
-  LZW(A, S, C);
+  LZW_encoder(A, S, C);
   
   // print output
   for (vector<bool>::iterator it = C.begin(); it != C.end(); it++) {
