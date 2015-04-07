@@ -1,6 +1,12 @@
 Lempel-Ziv-Welch (LZW)
 ===============
 
+Test Script
+----------
+```
+bash -x test_LZW.sh 
+```
+
 Sample Usage
 ----------
 ```
