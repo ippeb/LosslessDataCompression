@@ -3,7 +3,7 @@
   lossless data compression algorithm, dictionary coder
 
   The main function takes as argument
-  arg1: input file name, this shall be an ASCII-only textfile.
+  arg1: input file name, this shall be an ASCII-only text file.
   arg2: [optional] file name of the input alphabet.
 
   It then writes the following files:
