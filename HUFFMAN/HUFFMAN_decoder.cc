@@ -45,7 +45,7 @@ void HuffmanCoding_decoder(map<string, char>& M, char* S, string& T) {
 
 int main(int argc, char** argv) {
   if (argc != 3) {
-    fprintf(stderr, "Wrong number of arguments specified\n");
+    fprintf(stderr, "Wrong number of arguments specified.\n");
     return -1;
   }
   
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
   FILE *fin2 = fopen(argv[2], "r");
 
   if (fin1 == NULL || fin2 == NULL) {
-    fprintf(stderr, "Input file %s or %s could not be opened\n", argv[1], argv[2]);
+    fprintf(stderr, "Input file %s or %s could not be opened.\n", argv[1], argv[2]);
     return -1;
   }
 

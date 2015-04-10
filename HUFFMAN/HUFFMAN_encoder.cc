@@ -103,13 +103,13 @@ void HuffmanCoding(char* A, double* W, vector<vector<bool> >& C) {
 
 int main(int argc, char** argv) {
   if (argc != 2) {
-    fprintf(stderr, "Wrong number of arguments specified\n");
+    fprintf(stderr, "Wrong number of arguments specified.\n");
     return -1;
   }
   
   FILE *fin = fopen(argv[1], "r");
   if (fin == NULL) {
-    fprintf(stderr, "Input file %s could not be opened\n", argv[1]);
+    fprintf(stderr, "Input file %s could not be opened.\n", argv[1]);
     return -1;
   }
 
