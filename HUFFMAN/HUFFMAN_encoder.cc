@@ -31,6 +31,8 @@
 #include <vector>
 #include <stack>
 #include <queue>
+#define INPUT_BUFFER_SIZE 1000000
+#define ALPHABET_BUFFER_SIZE 1000
 const char fname1[] = "huffman_code_words.txt";
 const char fname2[] = "huffman_code_words_C.txt";
 const char fname3[] = "huffman_encoded.txt";
@@ -118,11 +120,12 @@ int main(int argc, char** argv) {
   FILE *fout5 = fopen(fname5, "w");
   
   // read input
-  char S[1000000];
+  char S[INPUT_BUFFER_SIZE];
   fread(S, sizeof(char), sizeof(S), fin);
   // specify the alphabet
-  char A[10000];  // the alphabet is determined by the chars appearing in the 
-                  // input, thus, every symbol should appear once in the input
+  // the alphabet is determined by the chars appearing in the 
+  // input, thus, every symbol should appear once in the input
+  char A[ALPHABET_BUFFER_SIZE]; 
   int alen = 0;
   int F[256]; // F[i] counts the frequency of char i
   memset(F, 0, sizeof F);

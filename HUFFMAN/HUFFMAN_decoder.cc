@@ -18,6 +18,8 @@
 #include <utility>
 #include <map>
 #include <string>
+#define INPUT_BUFFER_SIZE 10000000
+#define OUTPUT_BUFFER_SIZE 10000000
 using std::map;
 using std::string;
 
@@ -35,6 +37,7 @@ void HuffmanCoding_decoder(map<string, char>& M, char* S, string& T) {
     temp += S[i];
     if (M.find(temp) != M.end()) {
       T += M[temp];
+      printf("%c", M[temp]);
       temp = "";
     }
   }
@@ -57,15 +60,14 @@ int main(int argc, char** argv) {
   FILE *fout1 = fopen(fname1, "w");
   
   // read input
-  char S[1000000];
-  fread(S, sizeof(char), sizeof(S), fin1);
-
+  char* S = new char[INPUT_BUFFER_SIZE];
+  fread(S, sizeof(char), INPUT_BUFFER_SIZE * sizeof(char), fin1);
   // read alphabet, codewords
   map<string, char> M;
   int alen;
   fscanf(fin2, "%d", &alen);
   printf("Length of the alphabet: %d\n", alen);
-  char C[1000000];
+  char* C = new char[OUTPUT_BUFFER_SIZE];
   int a;
   for (int i = 0; i < alen; i++) {
     fscanf(fin2, "%d %s", &a, C);
