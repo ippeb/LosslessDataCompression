@@ -5,13 +5,13 @@
   The main function takes as argument
   arg1: input file name, this shall be an ASCII text file
         containing only '0' and '1'.
-  arg2: input file name, the file shall be an ASCII-only 
+  arg2: input file name, the file should only contain an ASCII
         string specifying the alphabet.
-
+ 
   It then writes the following files:
-  fout1: output file name: see fname1,
-         the output string after decoding, may contain
-	 symbols as specified by arg2.
+  fout1: output file name: see fname1, the output string after 
+         decoding. The symbols (chars) used are specified by
+         arg2.
 
 */
 
@@ -22,6 +22,8 @@
 #include <map>
 #include <vector>
 #include <utility>
+#define INPUT_BUFFER_SIZE 1000000
+#define ALPHABET_BUFFER_SIZE 1000
 const char fname1[] = "LZW_decoded.txt";
 using std::map;
 using std::vector;
@@ -134,11 +136,11 @@ int main(int argc, char** argv) {
   FILE *fout1 = fopen(fname1, "w");
 
   // read input
-  char S[1000000];
+  char S[INPUT_BUFFER_SIZE];
   fread(S, sizeof(char), sizeof(S), fin1);
 
   // read alphabet
-  char A[100000];
+  char A[ALPHABET_BUFFER_SIZE];
   fread(A, sizeof(char), sizeof(A), fin2);
   int alen = strlen(A);
   

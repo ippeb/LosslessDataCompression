@@ -3,18 +3,22 @@
   lossless data compression algorithm, dictionary coder
 
   The main function takes as argument
-  arg1: input file name, this shall be an ASCII-only text file.
-  arg2: [optional] file name of the input alphabet.
+  arg1: input file name, the text that should be encoded.
+        This shall be an ASCII-only text file containing 
+        only chars provided by arg2.
+  arg2: [optional] file name, the file should only contain 
+        an ASCII string specifying the alphabet. 
+        If arg2 is not provided, the alphabet is the set
+        of characters appearing in the input file (in 
+        alphabetical order).
 
   It then writes the following files:
-  fout1: output file name: see fname1,
-         specifies the output, after applying LZW. It 
-	 only contains '0' and '1'.
-  fout2: output file name: see fname2, 
-         the alphabet read from the file specified by arg2
-         (if provided).
-  fout3: output file name: see fname3,
-         C code for a 2D C string specifying the alphabet.
+  fout1: output file name: see fname1, the encoded text.
+	 The encoded text only contains '0' and '1'.
+  fout2: file name: see fname2, the alphabet read from the 
+         file specified by arg2 (if provided).
+  fout3: file name: see fname3, C code declaring the 
+         alphabet (the content of fout2).
 
 */
 
@@ -25,6 +29,8 @@
 #include <map>
 #include <vector>
 #include <utility>
+#define INPUT_BUFFER_SIZE 1000000
+#define ALPHABET_BUFFER_SIZE 1000
 const char fname1[] = "LZW_encoded.txt";
 const char fname2[] = "LZW_alphabet.txt";
 const char fname3[] = "LZW_alphabet_C.txt";
@@ -135,11 +141,11 @@ int main(int argc, char** argv) {
   FILE *fout3 = fopen(fname3, "w");
 
   // read input
-  char S[1000000];
+  char S[INPUT_BUFFER_SIZE];
   fread(S, sizeof(char), sizeof(S), fin1);
 
   // read alphabet 
-  char A[100000];
+  char A[ALPHABET_BUFFER_SIZE];
   int alen;
   if (argc >= 3) {
     fread(A, sizeof(char), sizeof(A), fin2);
@@ -148,14 +154,13 @@ int main(int argc, char** argv) {
   else {
     // generate alphabet
     alen = 0;
-    bool B[256];
-    memset(B, 0, sizeof(B));
+    bool Amap[256] = { false };
     int slen = strlen(S);
     for (int i = 0; i < slen; i++) 
-      B[(int) S[i]] = true;
+      Amap[(int) S[i]] = true;
 
     for (int i = 0; i < 256; i++) 
-      if (B[i]) 
+      if (Amap[i]) 
 	A[alen++] = (char) i;
   }
 
