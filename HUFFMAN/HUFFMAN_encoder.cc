@@ -56,6 +56,11 @@ typedef pair<int, bool> PIB;
 // C = {c_1, ..., c_n} the set of binary codeword
 //   where c_i is the codeword for a_i, 1 <= i <= n
 void HuffmanCoding_encoder(char const * const A, const int alen, double const * const W, vector<vector<bool> >& C) {
+  if (alen == 1) {
+    C.resize(1);
+    C[0].push_back(false);
+  }
+
   int id = alen;
   // format of nodes inserted in priority queue:
   // (weight, node index)
