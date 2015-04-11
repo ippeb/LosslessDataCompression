@@ -28,10 +28,8 @@ int RLE_encoder(char const * const S, const int slen, char * const C) {
     char base;
     for (cnt = 0, base = S[i++] == '0' ?  zomap[0] : zomap[1]; 
 	 S[i] != '\0' && (S[i] - '0' == base - zomap[0]); i++, cnt++);
-    printf("%c", base);
     C[ci++] = base;
     if (cnt > 0) {
-      printf("%d", cnt);
       ci += sprintf(&C[ci], "%d", cnt);
     }
   }

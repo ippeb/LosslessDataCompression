@@ -30,7 +30,6 @@ int RLE_decoder(char const * const S, const int slen, char * const C) {
     if (S[i] == zomap[0] || S[i] == zomap[1]) {
       base = (S[i] == zomap[0]) ? '0' : '1';
       C[ci++] = base;
-      printf("%c", base);
       count = 0;
       continue;
     }
@@ -42,12 +41,9 @@ int RLE_decoder(char const * const S, const int slen, char * const C) {
     }
     i--;
 
-    printf("(%d)", count);
     for (int j = 0; j < count; j++) {
       C[ci++] = base;
-      printf("%c", base);
     }
-    printf("\n");
     count = 0;
   }
   return ci;
