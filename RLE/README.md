@@ -4,7 +4,7 @@ Run-Length Encoding (RLE)
 Test Script
 ----------
 ```
-bash -x test_RLE.sh 
+bash test_RLE.sh 
 ```
 
 Sample Usage
