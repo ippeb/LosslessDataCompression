@@ -26,18 +26,17 @@
 */
 
 #include <cstdio>
-#include <iostream>
 #include <utility>
 #include <vector>
 #include <stack>
 #include <queue>
-#define INPUT_BUFFER_SIZE 1000000
+#define INPUT_BUFFER_SIZE 10000000
 #define ALPHABET_BUFFER_SIZE 1000
-const char fname1[] = "huffman_code_words.txt";
-const char fname2[] = "huffman_code_words_C.txt";
-const char fname3[] = "huffman_encoded.txt";
-const char fname4[] = "huffman_code_words_mapping.txt";
-const char fname5[] = "huffman_alphabet.txt";
+const char fname1[] = "HUFFMAN_code_words.txt";
+const char fname2[] = "HUFFMAN_code_words_C.txt";
+const char fname3[] = "HUFFMAN_encoded.txt";
+const char fname4[] = "HUFFMAN_code_words_mapping.txt";
+const char fname5[] = "HUFFMAN_alphabet.txt";
 using std::vector;
 using std::stack;
 using std::priority_queue;
@@ -51,26 +50,25 @@ typedef pair<int, bool> PIB;
 // A = {a_1, ..., a_n} alphabet, as an array of chars
 //   it is assumed that 0 <= a_i <= n-1 and all a_i are
 //   distinct, A is terminated with a '0' (C string)
+// alen: length of A
 // W = {w_1, ..., w_n} set of positive symbol weights,
 //   usually proportional to probabilities
 // C = {c_1, ..., c_n} the set of binary codeword
 //   where c_i is the codeword for a_i, 1 <= i <= n
-void HuffmanCoding(char* A, double* W, vector<vector<bool> >& C) {
-  int n = strlen(A);
-  int id = n;
-
+void HuffmanCoding_encoder(char const * const A, const int alen, double const * const W, vector<vector<bool> >& C) {
+  int id = alen;
   // format of nodes inserted in priority queue:
   // (weight, node index)
   priority_queue<PDI, vector<PDI>, greater<PDI> > P;
   // add all leaf nodes to the priority queue
-  for (int i = 0; i < n; i++) 
+  for (int i = 0; i < alen; i++) 
     P.push(make_pair(W[i], i));
   
   // generate the Huffman tree
 
   // parent[i] = (j, b): the parent of node i is node j
   // and the edge is marked with the binary digit b
-  PIB* parent = new PIB[n + n - 1];
+  PIB* parent = new PIB[alen + alen - 1];
   while (P.size() > 1) {
     // remove the two nodes of highest priority from the queue
     PDI n1 = P.top();
@@ -86,8 +84,8 @@ void HuffmanCoding(char* A, double* W, vector<vector<bool> >& C) {
 
   // construct the code words from the Huffman tree
   stack<bool> tempstack;
-  C.resize(n);
-  for (int i = 0; i < n; i++) {
+  C.resize(alen);
+  for (int i = 0; i < alen; i++) {
     int v = i;
     while (parent[v].first != -1) {
       tempstack.push(parent[v].second);
@@ -104,13 +102,13 @@ void HuffmanCoding(char* A, double* W, vector<vector<bool> >& C) {
 int main(int argc, char** argv) {
   if (argc != 2) {
     fprintf(stderr, "Wrong number of arguments specified.\n");
-    return -1;
+    return 1;
   }
   
   FILE *fin = fopen(argv[1], "r");
   if (fin == NULL) {
     fprintf(stderr, "Input file %s could not be opened.\n", argv[1]);
-    return -1;
+    return 1;
   }
 
   FILE *fout1 = fopen(fname1, "w");
@@ -120,31 +118,27 @@ int main(int argc, char** argv) {
   FILE *fout5 = fopen(fname5, "w");
   
   // read input
-  char S[INPUT_BUFFER_SIZE];
-  fread(S, sizeof(char), sizeof(S), fin);
+  char* S = new char[INPUT_BUFFER_SIZE];
+  int slen = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin);
   // specify the alphabet
   // the alphabet is determined by the chars appearing in the 
   // input, thus, every symbol should appear once in the input
-  char A[ALPHABET_BUFFER_SIZE]; 
+  char* A = new char[ALPHABET_BUFFER_SIZE]; 
   int alen = 0;
-  int F[256]; // F[i] counts the frequency of char i
-  memset(F, 0, sizeof F);
-  int inplen = strlen(S);
-  for (int i = 0; i < inplen; i++) {
-    if (F[(int) S[i]] == 0)
+  int F[256] = { 0 }; // F[i] counts the frequency of char i
+  for (int i = 0; i < slen; i++) {
+    if (F[(unsigned char) S[i]] == 0)
       alen++;
-    F[(int) S[i]]++;
+    F[(unsigned char) S[i]]++;
   }
-
 
   for (int i = 0, j = 0; i < 256; i++) 
     if (F[i] > 0)
       A[j++] = i;
-  A[alen] = 0;
   
   printf("The alphabet: ");
   for (int i = 0; i < alen; i++) {
-    printf("%c", A[i]);
+    printf("%c", A[i]); // TODO: some chars are unprintable
     if (i != alen-1) 
       printf(", ");
     else 
@@ -154,23 +148,22 @@ int main(int argc, char** argv) {
   // specify the weights
   double* W = new double[alen];
   for (int i = 0; i < alen; i++) {
-    W[i] = (double) F[(int) A[i]] / (double) inplen;
+    W[i] = (double) F[(unsigned char) A[i]] / (double) slen;
   }
 
   vector<vector<bool> > C;
   printf("Huffman Coding...\n");
-  HuffmanCoding(A, W, C);
-  
+  HuffmanCoding_encoder(A, alen, W, C);
+
   // print code words
   printf("The code words are:\n");
   for (int i = 0; i < alen; i++) {
-    printf("'%c' (%2.0lf) [%d] ", A[i], W[i]*100, F[(int) A[i]]);
+    printf("'%c' (%04.1lf) [%d] ", A[i], W[i]*100.0, F[(unsigned char) A[i]]);
     for (vector<bool>::iterator it = C[i].begin(); it != C[i].end(); it++) {
       printf("%d", (int) *it);
     }
     printf("\n");
   }
-
 
   // fout2
   fprintf(fout2, "char C[%d][]={", alen);
@@ -200,10 +193,11 @@ int main(int argc, char** argv) {
   int R[256];
   memset(R, -1, sizeof R);
   for (int i = 0; i < alen; i++) 
-    R[(int) A[i]] = i;
+    R[(unsigned char) A[i]] = i;
   // fout3
-  for (int i = 0; i < inplen; i++) {
-    for (vector<bool>::iterator it = C[R[(int) S[i]]].begin(); it != C[R[(int) S[i]]].end(); it++) {
+  for (int i = 0; i < slen; i++) {
+    for (vector<bool>::iterator it = C[R[(unsigned char) S[i]]].begin(); 
+	 it != C[R[(unsigned char) S[i]]].end(); it++) {
       fprintf(fout3, "%d", (int) *it);
     }
   }
@@ -212,7 +206,7 @@ int main(int argc, char** argv) {
   // fout4
   fprintf(fout4, "%d\n",alen);
   for (int i = 0; i < alen; i++) {
-    fprintf(fout4, "%d ", A[i]);
+    fprintf(fout4, "%d ", (unsigned char) A[i]);
     for (vector<bool>::iterator it = C[i].begin(); it != C[i].end(); it++) {
       fprintf(fout4, "%d", (int) *it);
     }
@@ -220,5 +214,5 @@ int main(int argc, char** argv) {
   }
 
   // fout5
-  fprintf(fout5, "%s", A);
+  fwrite(A, sizeof(char), alen, fout5);
 }
