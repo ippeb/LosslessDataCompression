@@ -12,16 +12,17 @@
 */
 
 #include <cstdio>
-#include <iostream>
 #define INPUT_BUFFER_SIZE 1000000
 #define OUTPUT_BUFFER_SIZE 1000000
 const char zomap[] = "XY"; // zero-, one-mapping; 'X'->'0', 'Y'->'1'
 const char fname1[] = "RLE_encoded.txt";
 
 // S: input string, consisting only of '0' and '1'
+// slen: length of S
 // C: output string, consisting only of chars provided by O
-void RLE_encoder(char* S, char *C) {
-  int slen = strlen(S), ci = 0;
+// returns number of bytes written to C
+int RLE_encoder(char const * const S, const int slen, char * const C) {
+  int ci = 0;
   for (int i = 0; i < slen;) {
     int cnt;  // counts cnt+1 consecutive appearences
     char base;
@@ -34,7 +35,7 @@ void RLE_encoder(char* S, char *C) {
       ci += sprintf(&C[ci], "%d", cnt);
     }
   }
-  C[ci] = '\0';
+  return ci;
 }
 
 int main(int argc, char** argv) {
@@ -53,8 +54,8 @@ int main(int argc, char** argv) {
   FILE *fout1 = fopen(fname1, "w");
 
   // read input
-  char S[INPUT_BUFFER_SIZE];
-  fread(S, sizeof(char), sizeof(S), fin1);
+  char* S = new char[INPUT_BUFFER_SIZE];
+  int slen = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
   int si = 0;
   // check if input is correctly formatted
   while (S[si++] != '\0') {
@@ -65,9 +66,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  char C[OUTPUT_BUFFER_SIZE];  // output
+  char* C = new char[OUTPUT_BUFFER_SIZE]; 
   printf("Run-Length encoding (base 10)...\n");
-  RLE_encoder(S, C);
+  int clen = RLE_encoder(S, slen, C);
   // fout1 
-  fprintf(fout1, "%s", C);
+  fwrite(C, sizeof(char), clen, fout1);
 }

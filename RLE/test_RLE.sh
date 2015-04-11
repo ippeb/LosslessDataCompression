@@ -4,8 +4,8 @@ make > /dev/null
 array=("single_one.txt" "single_zero.txt" "zero_one_sample.txt")
 for i in "${array[@]}"
 do 
-    ./rle_encoder "../samples/"$i > /dev/null
-    ./rle_decoder "RLE_encoded.txt" > /dev/null
+    ./RLE_encoder "../samples/"$i > /dev/null
+    ./RLE_decoder "RLE_encoded.txt" > /dev/null
 
     DIFF=$(diff RLE_decoded.txt "../samples/"$i)
     if [ -r RLE_decoded.txt ] && [ -r "../samples/"$i ] && [ "$DIFF" == "" ] 
