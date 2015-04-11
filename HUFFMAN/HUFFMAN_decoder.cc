@@ -21,7 +21,7 @@
 using std::map;
 using std::string;
 
-const char fname1[] = "huffman_decoded.txt";
+const char fname1[] = "HUFFMAN_decoded.txt";
 
 // map<codeword, symbol of the alphabet> M: maps a 
 //     codeword (sequence of '0' and '1' to a char
