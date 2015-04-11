@@ -14,8 +14,6 @@
 */
 
 #include <cstdio>
-#include <iostream>
-#include <utility>
 #include <map>
 #include <string>
 #define INPUT_BUFFER_SIZE 100000000
