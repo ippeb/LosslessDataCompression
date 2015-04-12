@@ -51,7 +51,9 @@ To decompress, one now only needs to provide the compressed output, since the al
 ```
 ### Header
 
-The **header** of `LZW_encoded.fastlzw` stores the length of the alphabet, the alphabet (similar to the above `LZW_alphabet.txt`), the length of the compressed output, followed by the compressed output. 
+The **header** of `LZW_encoded.fastlzw` stores the length of the alphabet, the alphabet (similar to the above `LZW_alphabet.txt`), the length of the compressed output
+
+The compressed output follows right after the header.
 
 
 
