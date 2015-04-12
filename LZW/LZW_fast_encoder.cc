@@ -19,6 +19,7 @@
 #define INPUT_BUFFER_SIZE 10000000
 #define OUTPUT_BUFFER_SIZE 10000000
 #define ALPHABET_BUFFER_SIZE 300
+#define SET_NTH_BIT(C, i, n) C[(i)] |= (1 << (n))
 const char fname1[] = "LZW_encoded.fastlzw";
 using std::map;
 using std::string;
@@ -33,6 +34,7 @@ int LZW_encoder(char const * const A, const int alen, char const * const S,
 		 const int slen,  char * const C) {
   map<string, int> MSI;
   int entries = alen, clen = 0;
+  memset(C, 0, OUTPUT_BUFFER_SIZE);
   for (int i = 0; i < alen; i++) {
     string tempchar(A+i, A+i+1);
     MSI[tempchar] = i;
@@ -48,8 +50,11 @@ int LZW_encoder(char const * const A, const int alen, char const * const S,
     i--;
     MSI[curr] = entries;
     int rbits = num_bits(i == 0 ? entries : entries-1);
-    for (int j = rbits - 1; j >= 0; j--) 
-      C[clen++] = (found >> j) & 1 ? '1' : '0';
+    for (int j = rbits - 1; j >= 0; j--) {
+      if ((found >> j) & 1)
+	SET_NTH_BIT(C, clen / 8, clen % 8);
+      clen++;
+    }
   }
   return clen;
 }
@@ -88,5 +93,6 @@ int main(int argc, char** argv) {
   char* C = new char[OUTPUT_BUFFER_SIZE];
   int clen = LZW_encoder(&A[1], alen, S, slen, C);
   fwrite(A, sizeof(char), alen+1, fout1);
-  fwrite(C, sizeof(char), clen, fout1);
+  fwrite(&clen, sizeof(char), sizeof(int), fout1); // output file size < 2 GB
+  fwrite(C, sizeof(char), (clen + 7) / 8, fout1);
 }

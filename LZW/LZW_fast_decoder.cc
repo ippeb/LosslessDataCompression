@@ -18,17 +18,12 @@
 #include <string>
 #include <vector>
 
-#include <map>
-#include <utility>
-
 #define INPUT_BUFFER_SIZE 10000000
 #define ALPHABET_BUFFER_SIZE 300
+#define GET_NTH_BIT(C, i, n) ((C[i] >> (n)) & 1)
 const char fname1[] = "LZW_decoded.txt";
 using std::vector;
 using std::string;
-
-using std::map;
-using std::pair;
 
 int num_bits(int x) {
   int bits = 0;
@@ -59,7 +54,7 @@ void LZW_decoder(char const * const A, const int alen,  char const * const S,
     value = 0;
     for (int j = i; j < i + rbits; j++) {
       value *= 2;
-      value += S[j] - '0';
+      value += GET_NTH_BIT(S, j/8, j%8);
     }
 
     string curr = "", tmp;
@@ -97,14 +92,18 @@ int main(int argc, char** argv) {
   
   // read input
   char* S = new char[INPUT_BUFFER_SIZE];
-  int file_len = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
+  fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
   // compute alen, slen
   int alen = (unsigned char) S[0] + 1;
-  int slen = file_len - alen - 1;
+  int slen = 0;
+  for (int j = 0; j < (int) sizeof(int); j++) {
+    slen <<= 8;
+    slen += (unsigned char) S[sizeof(int) - j + alen];
+  }
   // LZW
   printf("Lempel-Ziv-Welch decoding...\n");
   string T;
-  LZW_decoder(&S[1], alen, &S[alen + 1], slen, T);
+  LZW_decoder(&S[1], alen, &S[alen + 1 + (int) sizeof(int)], slen, T);
   // fout1
   fwrite(T.c_str(), sizeof(char), T.length(), fout1);
 }
