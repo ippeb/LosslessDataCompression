@@ -4,7 +4,7 @@ make > /dev/null
 array=("single_one.txt" "single_zero.txt" "zero_one_sample.txt"
     "single_char_large.txt")
 
-printf "%30s %10s %10s -> %10s\n" "file_name" "passed_test" "test_size" "enc_size "
+printf "%30s %10s %10s -> %10s\n" "file_name" "state" "test_size" "enc_size "
 echo "------------------------------------------------------------------"
 
 for i in "${array[@]}"
