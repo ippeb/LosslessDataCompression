@@ -44,14 +44,14 @@ Encoding is done with the following line and produces the compressed file `LZW_e
 ./LZW/LZW_fast_encoder samples/mapreduce.pdf
 ```
 
-To decompress, one now only needs to provide the compressed output, since the alphabet already included in there.
+To decompress, one now only needs to provide the compressed output, since the alphabet already included in there. The deccompressed file is stored in `LZW_decoded.txt`.
 
 ```
 ./LZW/LZW_fast_decoder LZW_encoded.fastlzw
 ```
 ### Header
 
-The **header** stores the length of the alphabet, the alphabet (similar to the above `LZW_alphabet.txt`), the length of the compressed output, followed by the compressed output. 
+The **header** of `LZW_encoded.fastlzw` stores the length of the alphabet, the alphabet (similar to the above `LZW_alphabet.txt`), the length of the compressed output, followed by the compressed output. 
 
 
 
