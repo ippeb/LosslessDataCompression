@@ -11,7 +11,7 @@ Sample Usage
 ----------
 ```
 make
-./rle_encoder ../samples/zero_one_sample.txt
-./rle_decoder RLE_encoded.txt 
+./RLE_encoder ../samples/zero_one_sample.txt
+./RLE_decoder RLE_encoded.txt 
 ```
 
