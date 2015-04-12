@@ -4,7 +4,7 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
 
-all: LZW_encoder LZW_decoder
+all: LZW_encoder LZW_decoder LZW_fast_encoder LZW_fast_decoder
 
 LZW_encoder: LZW_encoder.o
 	$(CXX) -o $@ $^ 
@@ -12,14 +12,22 @@ LZW_encoder: LZW_encoder.o
 LZW_decoder: LZW_decoder.o
 	$(CXX) -o $@ $^ 
 
+LZW_fast_encoder: LZW_fast_encoder.o
+	$(CXX) -o $@ $^ 
+
+LZW_fast_decoder: LZW_fast_decoder.o
+	$(CXX) -o $@ $^ 
+
 .PHONY: clean
 
 mostlyclean:
 	rm -f *.o 
-	rm -f LZW_encoder LZW_decoder
+	rm -f LZW_encoder LZW_decoder 
+	rm -f LZW_fast_encoder LZW_fast_decoder
 
 clean:
 	rm -f *.o 
 	rm -f LZW_encoder LZW_decoder
-	rm -f LZW_alphabet.txt LZW_alphabet_C.txt LZW_encoded.txt LZW_decoded.txt
+	rm -f LZW_fast_encoder LZW_fast_decoder 
+	rm -f LZW_alphabet.txt LZW_alphabet_C.txt LZW_encoded.txt LZW_decoded.txt LZW_decoded.fastlzw
 
