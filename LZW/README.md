@@ -11,7 +11,6 @@ Sample Usage
 ----------
 ```
 make
-./LZW_encoder ../samples/star_wars_episode_1.txt
+./LZW_encoder ../samples/mapreduce.pdf
 ./LZW_decoder LZW_encoded.txt LZW_alphabet.txt
 ```
-
