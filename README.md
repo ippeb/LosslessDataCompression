@@ -20,7 +20,7 @@ Let's compress a pdf file, Jeff's and Sanjay's paper on MapReduce.
 
 This produces `LZW_encoded.txt`, the compressed text and `LZW_alphabet.txt`, the set of symbols used in the original input. 
 
-Note, that the compressed  `LZW_encoded.txt` is stored as a text file using only the characters '0' and '1'. In practice, the output would be stored using all 256 symbols of a byte, so the effective size of the compressed output is actually one eight of `LZW_encoded.txt`.
+Note, that the compressed  `LZW_encoded.txt` is stored as a text file using only the characters '0' and '1'. In practice, the output would be stored using all 256 symbols, so the effective size of the compressed output is actually one eight of `LZW_encoded.txt`. *Fast Lempel-Ziv-Welch* (below) stores it using all 256 symbols.
 
 #### Decoder 
 To decode the encoded text, simply pass the compressed text and the input alphabet to the decoder.
@@ -31,6 +31,29 @@ To decode the encoded text, simply pass the compressed text and the input alphab
 ```
 
 The decoded output is stored in `LZW_decoded.txt`, which should correspond to the original input provided, in this case, `samples/mapreduce.pdf`.
+
+## Fast Lempel-Ziv-Welch (LZW)
+A more mature, improved implementation of the above "slow" LZW. Debug data is kept to a minimum. The compressed output `LZW_encoded.txt` contains all 256 ASCII symbols (not just '0' and '1' as above).
+
+The code can also be found in the `LZW` directory. Usage is even easier, since the alphabet is included in the compressed output. However, unlike the above LZW, this version uses a header, where the input alphabet, its length and the length of the compressed output is stored.
+
+### Sample Usage
+Encoding is done with the following line and produces the compressed file `LZW_encoded.fastlzw`.
+
+```
+./LZW/LZW_fast_encoder samples/mapreduce.pdf
+```
+
+To decompress, one now only needs to provide the compressed output, since the alphabet already included in there.
+
+```
+./LZW/LZW_fast_decoder LZW_encoded.fastlzw
+```
+### Header
+
+The **header** stores the length of the alphabet, the alphabet (similar to the above `LZW_alphabet.txt`), the length of the compressed output, followed by the compressed output. 
+
+
 
 ## Run-Length Encoding (RLE)
 Compresses sequences in which the same character occurs multiple times consecutively. 
@@ -75,7 +98,7 @@ Let's compress a picture of a tiger wearing sunglasses.
 
 This produces `HUFFMAN_encoded.txt`, the Huffman encoded output and `HUFFMAN_code_words_mapping.txt`, the mapping of symbols to codewords. (Some other files are also produced, you may ignore those.)
 
-Note, that similarly to LZW, the Huffman encoding `HUFFMAN_encoded.txt` is stored as a text file using only the characters '0' and '1'. In practice, the output would be stored using all 256 symbols of a byte, so the effective size of the compressed output is actually one eight of `HUFFMAN_encoded.txt`.
+Note, that similarly to LZW, the Huffman encoding `HUFFMAN_encoded.txt` is stored as a text file using only the characters '0' and '1'. In practice, the output would be stored using all 256 symbols, so the effective size of the compressed output is actually one eight of `HUFFMAN_encoded.txt`.
 
 
 #### Decoder
