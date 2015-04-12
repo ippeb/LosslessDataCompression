@@ -14,8 +14,8 @@
 */
 
 #include <cstdio>
-#define INPUT_BUFFER_SIZE 1000000
-#define OUTPUT_BUFFER_SIZE 1000000
+#define INPUT_BUFFER_SIZE 10000000
+#define OUTPUT_BUFFER_SIZE 10000000
 const char zomap[] = "XY"; // zero-, one-mapping; 'X'->'0', 'Y'->'1'
 const char fname1[] = "RLE_decoded.txt";
 
