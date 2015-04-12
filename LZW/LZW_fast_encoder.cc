@@ -3,20 +3,10 @@
   lossless data compression algorithm, dictionary coder
 
   The main function takes as argument
-  arg1: input file name, the text that should be encoded.
-        This shall be an ASCII-only text file containing 
-        only chars provided by arg2.
-  arg2: [optional] file name, the file should only contain 
-        an ASCII string specifying the alphabet. 
-        If arg2 is not provided, the alphabet is the set
-        of characters appearing in the input file (in 
-        alphabetical order).
+  arg1: input file name, the file that should be encoded.
 
-  It then writes the following files:
-  fout1: output file name: see fname1, the encoded text.
-	 The encoded text only contains '0' and '1'.
-  fout2: file name: see fname2, the alphabet read from the 
-         file specified by arg2 (if provided).
+  It then writes the following file:
+  fout1: output file name: see fname1, the compressed output.
 
   Author: Josef Ziegler (ippeb24@gmail.com)
 
@@ -28,9 +18,8 @@
 #include <map>
 #define INPUT_BUFFER_SIZE 10000000
 #define OUTPUT_BUFFER_SIZE 10000000
-#define ALPHABET_BUFFER_SIZE 1000
+#define ALPHABET_BUFFER_SIZE 300
 const char fname1[] = "LZW_encoded.fastlzw";
-const char fname2[] = "LZW_alphabet.txt";
 using std::map;
 using std::string;
 
@@ -43,7 +32,7 @@ int num_bits(int x) {
 int LZW_encoder(char const * const A, const int alen, char const * const S, 
 		 const int slen,  char * const C) {
   map<string, int> MSI;
-  int entries = alen, clen_bit = 0;
+  int entries = alen, clen = 0;
   for (int i = 0; i < alen; i++) {
     string tempchar(A+i, A+i+1);
     MSI[tempchar] = i;
@@ -60,13 +49,13 @@ int LZW_encoder(char const * const A, const int alen, char const * const S,
     MSI[curr] = entries;
     int rbits = num_bits(i == 0 ? entries : entries-1);
     for (int j = rbits - 1; j >= 0; j--) 
-      C[clen_bit++] = (found >> j) & 1 ? '1' : '0';
+      C[clen++] = (found >> j) & 1 ? '1' : '0';
   }
-  return clen_bit;
+  return clen;
 }
 
 int main(int argc, char** argv) {
-  if (argc > 3 || argc <= 1) {
+  if (argc != 2) {
     fprintf(stderr, "Wrong number of arguments specified.\n");
     return 1;
   }
@@ -77,37 +66,27 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  FILE *fin2 = fopen(argv[2], "r");
-  if (argc >= 3) {
-    if (fin2 == NULL) {
-      fprintf(stderr, "Input file %s could not be opened.\n", argv[2]);
-      return 1;
-    }
-  }
-
   FILE *fout1 = fopen(fname1, "w");
-  FILE *fout2 = fopen(fname2, "w");
 
   char* S = new char[INPUT_BUFFER_SIZE];
   int slen = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
+
   char A[ALPHABET_BUFFER_SIZE];
-  int alen;
-  if (argc >= 3) {
-    alen = fread(A, sizeof(char), ALPHABET_BUFFER_SIZE, fin2);
-  }
-  else {
-    alen = 0;
-    bool Amap[256] = { false };
-    for (int i = 0; i < slen; i++)
-      Amap[(unsigned char) S[i]] = true;
-    for (int i = 0; i < 256; i++) 
-      if (Amap[i]) 
-	A[alen++] = (char) i;
-  }
+  int alen = 0;
+  bool Amap[256] = { false };
+  for (int i = 0; i < slen; i++)
+    Amap[(unsigned char) S[i]] = true;
+
+  for (int i = 0; i < 256; i++) 
+    if (Amap[i]) 
+      A[1 + alen++] = (char) i; // A[0] stores length
+  A[0] = (char) (alen-1);  // -1 needed  here, since
+  // 256 would map to 0, but 0 can never occur, add +1
+  // on decoder side
 
   printf("Fast Lempel-Ziv-Welch...\n");
   char* C = new char[OUTPUT_BUFFER_SIZE];
-  int clen = LZW_encoder(A, alen, S, slen, C);
+  int clen = LZW_encoder(&A[1], alen, S, slen, C);
+  fwrite(A, sizeof(char), alen+1, fout1);
   fwrite(C, sizeof(char), clen, fout1);
-  fwrite(A, sizeof(char), alen, fout2);
 }

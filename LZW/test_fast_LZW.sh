@@ -16,7 +16,7 @@ echo "--------------------------------------------------------------------------
 for i in "${array[@]}"
 do 
     ./LZW_fast_encoder $i > /dev/null
-    ./LZW_fast_decoder LZW_encoded.fastlzw LZW_alphabet.txt > /dev/null
+    ./LZW_fast_decoder LZW_encoded.fastlzw  > /dev/null
     DIFF=$(diff LZW_decoded.txt $i)
 
     if [ -r LZW_decoded.txt ] && [ -r $i ] && [ "$DIFF" == "" ] 
