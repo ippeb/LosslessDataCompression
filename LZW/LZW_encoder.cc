@@ -29,7 +29,7 @@
 #include <map>
 #include <vector>
 #include <utility>
-#define INPUT_BUFFER_SIZE 1000000
+#define INPUT_BUFFER_SIZE 10000000
 #define ALPHABET_BUFFER_SIZE 1000
 const char fname1[] = "LZW_encoded.txt";
 const char fname2[] = "LZW_alphabet.txt";
@@ -43,6 +43,8 @@ using std::make_pair;
 
 // return the number of bits integer x contains
 int num_bits(int x) {
+  if (x == 0) // special case 
+    return 1;
   int bits = 0;
   while (x > 0) {
     x /= 2;
@@ -54,58 +56,60 @@ int num_bits(int x) {
 // A = {a_1, ..., a_alen} alphabet, as an array of chars
 //   it is assumed that 0 <= a_i <= n-1 and all a_i are
 //   distinct, A is terminated with a '0' (C string)
-// S = {s_1, ..., s_n} input char string, null terminated
+// S = {s_1, ..., s_slen} input char string, null terminated
 // C = {c_1, ..., c_m} output binary sequence
-void LZW_encoder(char* A, char* S, vector<bool>& C) {
-  int alen = strlen(A), slen = strlen(S);
-  int entries = alen;
-  // M = (u_i, v_i) LZW extended dictionary, map string u_i
-  //     to code number v_i
+void LZW_encoder(char const * const A, const int alen, char const * const S, 
+		 const int slen,  vector<bool>& C) {
+  // M = (u_i, v_i) LZW extended dictionary, map string u_i to code number v_i
   map<string, int> MSI;
   map<int, string> MIS; // reverse mapping
   MSI.clear();
   MIS.clear();
-  // initialize the dictionary to contain all strings of 
-  // length one
+  // initialize the dictionary to contain all strings of  length one
+  int entries = alen;
   for (int i = 0; i < alen; i++) {
     string tempchar(A+i, A+i+1);
-    MIS.insert(make_pair(i, tempchar));
-    MSI.insert(make_pair(tempchar, i));
+    MIS[i] = tempchar;
+    MSI[tempchar] = i;
   }
-  
+
   C.clear();
   for (int i = 0; i < slen; i++) {
-    // find the longest string W in the dictionary that 
-    // matches the current input
+    // find longest string W in the dictionary that matches the current input
     string curr(S+i, S+i+1);
     int found = -1;
-    while (MSI.find(curr) != MSI.end() && S[i] != '\0') {
+    while (MSI.find(curr) != MSI.end() && i < slen) {
       found = MSI[curr];
       curr += S[++i];
     }
     i--;
-    printf("found: %d (%s) ", found, MIS[found].c_str());
-    if (S[i+1] != 0) {
+    if (found != -1) 
+      printf("found:     %7d (%s) ", found, MIS[found].c_str());
+    else {
+      // ERROR
+      fprintf(stderr, "LZW_encoder error at %d, alen %d slen %d\n", i, alen, slen);
+      return;
+    }
+
+    if (i != slen-1) {
       MSI[curr] = entries;
       MIS[entries] = curr;
     }
     // transform "found" to binary and save to output
     // this binary number needs to have log_2(entries) (rounded 
     // down) digits
-    if (found != -1) {
-      printf("[");
-      for (int j = num_bits(entries-1) - 1; j >= 0; j--) {
-	C.push_back((found >> j)&1);
-	printf("%d", (found >> j)&1);
-      }
-      printf("]\n");
-
-      // debug
-      if (S[i+1] != 0) {
-	printf("new entry %d: %s\n", entries, curr.c_str());
-	entries++;
-      }
-
+    printf("[");
+    int rbits = num_bits(i == 0 ? entries : entries-1);
+    for (int j = rbits - 1; j >= 0; j--) {
+      C.push_back((found >> j)&1);
+      printf("%d", (found >> j)&1);
+    }
+    printf("]\n");
+    
+    // debug
+    if (i+1 != slen) {
+      printf("new entry: %7d (%s)\n", entries, curr.c_str());
+      entries++;
     }
   }
 
@@ -141,24 +145,20 @@ int main(int argc, char** argv) {
   FILE *fout3 = fopen(fname3, "w");
 
   // read input
-  char S[INPUT_BUFFER_SIZE];
-  fread(S, sizeof(char), sizeof(S), fin1);
-
+  char* S = new char[INPUT_BUFFER_SIZE];
+  int slen = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
   // read alphabet 
   char A[ALPHABET_BUFFER_SIZE];
   int alen;
   if (argc >= 3) {
-    fread(A, sizeof(char), sizeof(A), fin2);
-    alen = strlen(A);
+    alen = fread(A, sizeof(char), ALPHABET_BUFFER_SIZE, fin2);
   }
   else {
     // generate alphabet
     alen = 0;
     bool Amap[256] = { false };
-    int slen = strlen(S);
-    for (int i = 0; i < slen; i++) 
-      Amap[(int) S[i]] = true;
-
+    for (int i = 0; i < slen; i++)
+      Amap[(unsigned char) S[i]] = true;
     for (int i = 0; i < 256; i++) 
       if (Amap[i]) 
 	A[alen++] = (char) i;
@@ -175,8 +175,8 @@ int main(int argc, char** argv) {
 
   printf("Lempel-Ziv-Welch...\n");
   vector<bool> C;
-  LZW_encoder(A, S, C);
-  
+  LZW_encoder(A, alen, S, slen, C);
+    
   // print output
   for (vector<bool>::iterator it = C.begin(); it != C.end(); it++) {
     printf("%c", '0' + *it );
@@ -189,7 +189,7 @@ int main(int argc, char** argv) {
   }
 
   // fout2
-  fprintf(fout2, "%s", A);
+  fwrite(A, sizeof(char), alen, fout2);
 
   // fout3
   fprintf(fout3, "char A[]=\"");

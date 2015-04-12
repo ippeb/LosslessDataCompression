@@ -22,7 +22,7 @@
 #include <map>
 #include <vector>
 #include <utility>
-#define INPUT_BUFFER_SIZE 1000000
+#define INPUT_BUFFER_SIZE 10000000
 #define ALPHABET_BUFFER_SIZE 1000
 const char fname1[] = "LZW_decoded.txt";
 using std::map;
@@ -34,6 +34,8 @@ using std::make_pair;
 
 // return the number of bits integer x contains
 int num_bits(int x) {
+  if (x == 0) // special case 
+    return 1;
   int bits = 0;
   while (x > 0) {
     x /= 2;
@@ -48,8 +50,8 @@ int num_bits(int x) {
 // S input char string, containing only '0' and '1'
 //   (null-terminated)
 // T decoded output string (null-terminated)
-void LZW_decoder(char* A, char* S, string& T) {
-  int alen = strlen(A), slen = strlen(S);
+void LZW_decoder(char const * const A, const int alen,  char const * const S, 
+		 const int slen, string& T) {
   int entries = alen;
   // M = (u_i, v_i) LZW extended dictionary, map string u_i
   //     to code number v_i
@@ -64,12 +66,11 @@ void LZW_decoder(char* A, char* S, string& T) {
     MIS.insert(make_pair(i, tempchar));
     MSI.insert(make_pair(tempchar, i));
   }
-  // cScSc <<<--
+
   string previous;
   int value = 0, i = 0;
   while (i < slen) {
     int rbits = num_bits(entries);
-
     if (slen - i < rbits) {
       printf("ERROR, %d bits undecoded.\n", slen - i);
       break;
@@ -84,18 +85,18 @@ void LZW_decoder(char* A, char* S, string& T) {
     string curr = "", tmp;
     if (MIS.find(value) != MIS.end()) {
       curr = MIS[value];
-
+      printf("decoded:   %7d (%s) ", value, curr.c_str());
+      printf("[");
       for (int j = i;  j < i + rbits; j++) {
 	printf("%c", S[j]);
       }
-      printf("   ");
-      printf("%2d (%s)\n", value, curr.c_str());
+      printf("]\n");
 
       T += curr;
       tmp = previous + curr[0]; // first char
       previous = curr;
       if (i != 0) {
-	printf("new entry %d: %s\n", entries, tmp.c_str());
+	printf("new entry: %7d (%s)\n", entries, tmp.c_str());
 	MSI[tmp] = entries;
 	MIS[entries] = tmp;
 	entries++;
@@ -110,6 +111,7 @@ void LZW_decoder(char* A, char* S, string& T) {
       MIS[entries] = curr;
       entries++;
       previous = curr;
+
     }
     i += rbits;    
   }
@@ -129,20 +131,20 @@ int main(int argc, char** argv) {
   FILE *fin2 = fopen(argv[2], "r");
 
   if (fin1 == NULL || fin2 == NULL) {
-    fprintf(stderr, "Input file %s or %s could not be opened.\n", argv[1], argv[2]);
+    fprintf(stderr, "Input file %s or %s could not be opened.\n", 
+	    argv[1], argv[2]);
     return -1;
   }
 
   FILE *fout1 = fopen(fname1, "w");
 
   // read input
-  char S[INPUT_BUFFER_SIZE];
-  fread(S, sizeof(char), sizeof(S), fin1);
+  char* S = new char[INPUT_BUFFER_SIZE];
+  int slen = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
 
   // read alphabet
-  char A[ALPHABET_BUFFER_SIZE];
-  fread(A, sizeof(char), sizeof(A), fin2);
-  int alen = strlen(A);
+  char* A = new char[ALPHABET_BUFFER_SIZE];
+  int alen = fread(A, sizeof(char), ALPHABET_BUFFER_SIZE, fin2);
   
   printf("The alphabet: ");
   for (int i = 0; i < alen; i++) {
@@ -155,9 +157,9 @@ int main(int argc, char** argv) {
 
   printf("Lempel-Ziv-Welch decoding...\n");
   string T;
-  LZW_decoder(A, S, T);
+  LZW_decoder(A, alen, S, slen, T);
 
   printf("%s\n", T.c_str());  
   // fout1
-  fprintf(fout1, "%s", T.c_str());
+  fwrite(T.c_str(), sizeof(char), T.length(), fout1);
 }
