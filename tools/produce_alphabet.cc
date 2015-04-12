@@ -7,6 +7,9 @@
    The main function takes as argument
    arg1: input file name, the alphabet of this file
          will be produced.
+
+  Author: Josef Ziegler (ippeb24@gmail.com)
+
 */
 
 #include <cstdio>

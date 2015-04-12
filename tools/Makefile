@@ -1,3 +1,6 @@
+# ------------------------------------------------
+# Author: Josef Ziegler (ippeb24@gmail.com)
+# ------------------------------------------------
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
 

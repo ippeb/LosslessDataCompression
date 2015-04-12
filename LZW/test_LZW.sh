@@ -1,4 +1,11 @@
 #!/bin/bash
+
+#==============================================================================
+# Tests the Lempel-Ziw-Welch Encoder and Decoder.
+#
+# Author: Josef Ziegler (ippeb24@gmail.com)
+#==============================================================================
+
 make > /dev/null
 
 array=("single_one.txt" "single_zero.txt" "zero_one_sample.txt" 

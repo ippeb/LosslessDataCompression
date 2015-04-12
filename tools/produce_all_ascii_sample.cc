@@ -1,6 +1,8 @@
 /*
   Generate file containing all ASCII chars.
 
+  Author: Josef Ziegler (ippeb24@gmail.com)
+
  */
 
 #include <cstdio>

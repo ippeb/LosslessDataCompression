@@ -11,6 +11,8 @@
   fout1: output file name: see fname1, the decoded text.
          Contains only chars '0' and '1'.
 
+  Author: Josef Ziegler (ippeb24@gmail.com)
+
 */
 
 #include <cstdio>

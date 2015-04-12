@@ -23,6 +23,8 @@
          contains a null-terminated string, containing 
 	 all chars of the alphabet.
 
+  Author: Josef Ziegler (ippeb24@gmail.com)
+
 */
 
 #include <cstdio>

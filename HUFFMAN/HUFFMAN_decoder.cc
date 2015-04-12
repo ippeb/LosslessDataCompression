@@ -11,6 +11,9 @@
   It then writes the following files:
   fout1: output file name: fname1, 
          the decoded (original) ASCII text.
+
+  Author: Josef Ziegler (ippeb24@gmail.com)
+
 */
 
 #include <cstdio>

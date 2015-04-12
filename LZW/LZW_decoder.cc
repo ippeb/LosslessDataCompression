@@ -13,6 +13,8 @@
          decoding. The symbols (chars) used are specified by
          arg2.
 
+  Author: Josef Ziegler (ippeb24@gmail.com)
+
 */
 
 #include <cstdio>
