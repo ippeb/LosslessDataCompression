@@ -1,33 +1,25 @@
 # ------------------------------------------------
 # Author: Josef Ziegler (ippeb24@gmail.com)
+# Author: Thomas Richner (mail@trichner.ch)
 # ------------------------------------------------
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
 
-all: LZW_encoder LZW_decoder LZW_fast_encoder LZW_fast_decoder
+BIN = LZW_encoder LZW_decoder LZW_fast_encoder LZW_fast_decoder
 
-LZW_encoder: LZW_encoder.o
-	$(CXX) -o $@ $^ 
+all: $(BIN)
 
-LZW_decoder: LZW_decoder.o
-	$(CXX) -o $@ $^ 
+%.o : %.cc
+	$(CXX) $(CXXFLAGS) -c $<
 
-LZW_fast_encoder: LZW_fast_encoder.o
-	$(CXX) -o $@ $^ 
-
-LZW_fast_decoder: LZW_fast_decoder.o
-	$(CXX) -o $@ $^ 
-
-.PHONY: clean
+% : %.o
+	$(CXX) -o $@ -c $<
 
 mostlyclean:
-	rm -f *.o 
-	rm -f LZW_encoder LZW_decoder 
-	rm -f LZW_fast_encoder LZW_fast_decoder
+	-rm -f *.o 
+	-rm -f $(BIN) 
 
-clean:
-	rm -f *.o 
-	rm -f LZW_encoder LZW_decoder
-	rm -f LZW_fast_encoder LZW_fast_decoder 
-	rm -f LZW_alphabet.txt LZW_alphabet_C.txt LZW_encoded.txt LZW_decoded.txt LZW_encoded.fastlzw
+clean: mostlyclean
+	-rm -f LZW_alphabet.txt LZW_alphabet_C.txt LZW_encoded.txt LZW_decoded.txt LZW_encoded.fastlzw
 
+.PHONY: clean mostlyclean all
