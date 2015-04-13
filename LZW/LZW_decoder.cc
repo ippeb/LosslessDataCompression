@@ -127,7 +127,7 @@ void LZW_decoder(char const * const A, const int alen,  char const * const S,
 int main(int argc, char** argv) {
   if (argc != 3) {
     fprintf(stderr, "Wrong number of arguments specified.\n");
-    return -1;
+    return 1;
   }
   FILE *fin1 = fopen(argv[1], "r");
   FILE *fin2 = fopen(argv[2], "r");
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
   if (fin1 == NULL || fin2 == NULL) {
     fprintf(stderr, "Input file %s or %s could not be opened.\n", 
 	    argv[1], argv[2]);
-    return -1;
+    return 1;
   }
 
   FILE *fout1 = fopen(fname1, "w");
