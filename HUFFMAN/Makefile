@@ -4,22 +4,20 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
 
-all: HUFFMAN_encoder HUFFMAN_decoder
+BIN = HUFFMAN_encoder HUFFMAN_decoder
 
-HUFFMAN_encoder: HUFFMAN_encoder.o
-	$(CXX) -o $@ $^ 
+all: $(BIN)
 
-HUFFMAN_decoder: HUFFMAN_decoder.o
-	$(CXX) -o $@ $^ 
+%.o : %.cc
+	$(CXX) $(CXXFLAGS) -c $<
 
-.PHONY: clean
+% : %.o
+	$(CXX) -o $@ -c $<
 
 mostlyclean:
-	rm -f *.o 
-	rm -f HUFFMAN_encoder HUFFMAN_decoder
+	-rm -f *.o 
+	-rm -f $(BIN) 
 
-clean:
-	rm -f *.o 
-	rm -f HUFFMAN_encoder HUFFMAN_decoder
+clean: mostlyclean
 	rm -f HUFFMAN_alphabet.txt HUFFMAN_code_words.txt HUFFMAN_code_words_C.txt HUFFMAN_encoded.txt HUFFMAN_code_words_mapping.txt HUFFMAN_alphabet.txt HUFFMAN_decoded.txt
 

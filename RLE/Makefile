@@ -4,21 +4,19 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
 
-all: RLE_encoder RLE_decoder
+BIN = RLE_encoder RLE_decoder
 
-RLE_encoder: RLE_encoder.o
-	$(CXX) -o $@ $^ 
+all: $(BIN)
 
-RLE_decoder: RLE_decoder.o
-	$(CXX) -o $@ $^ 
+%.o : %.cc
+	$(CXX) $(CXXFLAGS) -c $<
 
-.PHONY: clean
+% : %.o
+	$(CXX) -o $@ -c $<
 
 mostlyclean:
-	rm -f *.o 
-	rm -f RLE_encoder RLE_decoder
+	-rm -f *.o 
+	-rm -f $(BIN) 
 
-clean:
-	rm -f *.o 
-	rm -f RLE_encoder RLE_decoder
+clean: mostlyclean
 	rm -f RLE_encoded.txt RLE_decoded.txt
