@@ -4,22 +4,21 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
 
-all: produce_all_ascii_sample produce_alphabet alphabet_conversion
+BiN = produce_all_ascii_sample produce_alphabet alphabet_conversion
 
-produce_all_ascii_sample: produce_all_ascii_sample.o
-	$(CXX) -o $@ $^ 
+all: $(BIN)
 
-produce_alphabet: produce_alphabet.o
-	$(CXX) -o $@ $^ 
+%.o : %.cc
+	$(CXX) $(CXXFLAGS) -c $<
 
-alphabet_conversion: alphabet_conversion.o
-	$(CXX) -o $@ $^ 
+% : %.o
+	$(CXX) -o $@ -c $<
 
-.PHONY: clean
+mostlyclean:
+	-rm -f *.o 
+	-rm -f $(BIN) 
 
-clean:
-	rm -f *.o 
-	rm -f produce_all_ascii_sample produce_alphabet alphabet_conversion
-	rm -f all_ascii_large.txt
+clean: mostlyclean
+	-rm -f all_ascii_large.txt
 
-
+.PHONY: clean mostlyclean allclean:
