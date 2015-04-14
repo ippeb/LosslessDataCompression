@@ -10,8 +10,8 @@ make > /dev/null
 
 array=(../samples/*)
 
-printf "%40s %10s %10s -> %10s\n" "file_name" "state" "test_size" "enc_size "
-echo "----------------------------------------------------------------------------"
+printf "%40s %10s %10s -> %10s (%10s)\n" "file_name" "state" "orig_size" "enc_size" "diff_size"
+echo "------------------------------------------------------------------------------------------"
 
 for i in "${array[@]}"
 do 
@@ -23,9 +23,10 @@ do
     then
 	originalsize=$(wc -c < $i)
 	encodedsize=$(wc -c < "LZW_encoded.fastlzw")
-	printf "%40s %10s %10s -> %10s\n" $i "CORRECT" $originalsize $encodedsize
+	diffsize=`expr $originalsize - $encodedsize`
+	printf "%40s %10s %10s -> %10s (%10s)\n" $i "CORRECT" $originalsize $encodedsize $diffsize
     else
-	printf "%40s %10s %10s -> %10s\n" $i "FALSE" "N/A" "N/A"
+	printf "%40s %10s %10s -> %10s (%10s)\n" $i "FALSE" "N/A" "N/A" "N/A"
     fi
 done
 
