@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <vector>
 
 #define INPUT_BUFFER_SIZE 10000000
@@ -92,7 +93,16 @@ int main(int argc, char** argv) {
   
   // read input
   char* S = new char[INPUT_BUFFER_SIZE];
-  fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
+  int file_len = fread(S, sizeof(char), INPUT_BUFFER_SIZE, fin1);
+  // header_one
+  char header_one = S[0];
+  S = &S[1];
+  if (!(header_one & 1)) {
+    fwrite(S, sizeof(char), file_len - 1, fout1);
+    return 0;
+  }
+
+  
   // compute alen, slen
   int alen = (unsigned char) S[0] + 1;
   int slen = 0;

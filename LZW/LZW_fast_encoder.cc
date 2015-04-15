@@ -14,6 +14,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <cstring>
 #include <string>
 #include <map>
 #define INPUT_BUFFER_SIZE 10000000
@@ -92,6 +93,28 @@ int main(int argc, char** argv) {
   printf("Fast Lempel-Ziv-Welch...\n");
   char* C = new char[OUTPUT_BUFFER_SIZE];
   int clen = LZW_encoder(&A[1], alen, S, slen, C);
+
+  // decide if compression is needed
+  char header_one = 0;
+  if (((clen + 7) / 8) + alen + 1 > slen) {
+    // no compression
+    printf("Decided not to compress.\n");
+    printf("  - Original size: %10d.\n", slen);
+    printf("  - LZW compressed size: %10d (%10d + %10d + %10d)\n",
+	   1 + alen + (clen + 7) / 8, 1, alen, (clen + 7) / 8);
+    header_one = 0;
+  }
+  else {
+    // compression
+    header_one = 1;
+  }
+    
+  fwrite(&header_one, sizeof(char), 1, fout1);
+  if (! (header_one & 1)) {
+    // no compression
+    fwrite(S, sizeof(char), slen, fout1);
+    return 0;
+  }
   fwrite(A, sizeof(char), alen+1, fout1);
   fwrite(&clen, sizeof(char), sizeof(int), fout1); // output file size < 2 GB
   fwrite(C, sizeof(char), (clen + 7) / 8, fout1);
