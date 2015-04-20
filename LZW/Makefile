@@ -1,6 +1,6 @@
 # ------------------------------------------------
 # Author: Josef Ziegler (ippeb24@gmail.com)
-# Author: Thomas Richner (mail@trichner.ch)
+# Author: Thomas Richner (mail@trichner.ch) (thanks to Virag Varga)
 # ------------------------------------------------
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -pedantic
